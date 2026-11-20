@@ -1,11 +1,19 @@
-/* Light by default; the choice made with the toggle is remembered in this browser. */
+/* Follows the visitor's system colour scheme. The toggle overrides it, and the
+   override is remembered in this browser until it matches the system again. */
 (function () {
   var root = document.documentElement;
+  var media = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+
+  function systemDark() { return !!(media && media.matches); }
+  function isDark() {
+    var t = root.getAttribute("data-theme");
+    return t === "dark" || (t !== "light" && systemDark());
+  }
+
   var stored = null;
   try { stored = localStorage.getItem("theme"); } catch (e) {}
-  if (stored === "dark") root.setAttribute("data-theme", "dark");
+  if (stored === "dark" || stored === "light") root.setAttribute("data-theme", stored);
 
-  function isDark() { return root.getAttribute("data-theme") === "dark"; }
   function label(btn) {
     var text = isDark() ? "Switch to light mode" : "Switch to dark mode";
     btn.setAttribute("aria-label", text);
@@ -18,10 +26,16 @@
     label(btn);
     btn.addEventListener("click", function () {
       var next = isDark() ? "light" : "dark";
-      if (next === "dark") root.setAttribute("data-theme", "dark");
-      else root.removeAttribute("data-theme");
-      try { localStorage.setItem("theme", next); } catch (e) {}
+      if ((next === "dark") === systemDark()) {
+        /* same as the system setting: go back to following it */
+        root.removeAttribute("data-theme");
+        try { localStorage.removeItem("theme"); } catch (e) {}
+      } else {
+        root.setAttribute("data-theme", next);
+        try { localStorage.setItem("theme", next); } catch (e) {}
+      }
       label(btn);
     });
+    if (media && media.addEventListener) media.addEventListener("change", function () { label(btn); });
   });
 })();
