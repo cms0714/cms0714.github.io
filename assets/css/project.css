@@ -83,9 +83,7 @@ figure video { width: 100%; height: auto; display: block; border-radius: 4px; ba
 .toc li { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: 0.16rem 0; }
 .toc .when { color: var(--muted); white-space: nowrap; }
 
-@media (prefers-color-scheme: dark) {
-  .tbl.compare .no::before { color: #f2a19b; }
-}
+:root[data-theme="dark"] .tbl.compare .no::before { color: #f2a19b; }
 @media (max-width: 40rem) {
   .duo { grid-template-columns: 1fr; }
   .duo .narrow { max-width: 62%; }
