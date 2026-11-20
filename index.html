@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minseok Choi</title>
+  <meta name="description" content="Minseok Choi — undergraduate at Seoul National University working on robot manipulation and robust imitation learning.">
+  <meta name="author" content="Minseok Choi">
+  <meta property="og:title" content="Minseok Choi">
+  <meta property="og:description" content="Undergraduate at Seoul National University working on robot manipulation and robust imitation learning.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cms0714.github.io/">
+  <link rel="canonical" href="https://cms0714.github.io/">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="nav" aria-label="Sections">
+    <a class="brand" href="#top">Minseok Choi</a>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#publications">Publications</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="assets/files/Minseok_Choi_CV.pdf">CV</a></li>
+    </ul>
+  </nav>
+
+  <header class="intro" id="top">
+    <img src="assets/img/profile.jpg" alt="Portrait of Minseok Choi" width="400" height="400">
+    <div>
+      <h1>Minseok Choi</h1>
+      <p class="role">Undergraduate, Seoul National University<br>Mechanical Engineering · Electrical and Computer Engineering</p>
+      <ul class="links">
+        <li><a href="mailto:cms0714@snu.ac.kr">Email</a></li>
+        <li><a href="assets/files/Minseok_Choi_CV.pdf">CV</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <section id="about">
+      <h2>About</h2>
+      <p>
+        I am an undergraduate at Seoul National University, studying Mechanical Engineering with a double
+        major in Electrical and Computer Engineering. I am a research intern in the Robotics Laboratory,
+        advised by Prof. Frank C. Park.
+      </p>
+      <p>
+        I work on robot manipulation. I am interested in making imitation-learned policies robust:
+        detecting when a policy is failing, recovering from the failure, and improving the policy with
+        reinforcement learning.
+      </p>
+      <p>
+        From January to June 2027 I will be an exchange student at the University of Washington.
+      </p>
+    </section>
+
+    <section id="publications">
+      <h2>Publications</h2>
+
+      <article class="item">
+        <figure>
+          <a href="https://erickun0125.github.io/constraint-decomposed-impedance/">
+            <img src="assets/img/corl-teaser.jpg" width="1000" height="504" loading="lazy"
+                 alt="Simulation and real-robot views of a gripper on an articulated object, with the stiff directions of the impedance controller drawn at the grasp.">
+          </a>
+        </figure>
+        <div>
+          <h3>Constraint-Decomposed Impedance Control from Generative Policy for Articulated Object Manipulation</h3>
+          <p class="authors">Kyungseo Park, Byeongdo Lim, Jungbin Lim, <strong>Minseok Choi</strong>, Frank C. Park</p>
+          <p class="venue"><em>Conference on Robot Learning (CoRL), 2026</em><span class="badge">Spotlight</span></p>
+          <p class="desc">
+            The motions a generative policy samples from one observation lie mostly along the directions an
+            articulated object can move. The paper extracts those directions and makes the robot stiff
+            along them and compliant across them, which lowers the contact forces that fight the object's
+            constraints. I built the controller code and setup for the real-robot experiments.
+          </p>
+          <p class="item-links">
+            <a href="https://arxiv.org/abs/2610.16316">arXiv</a>
+            <a href="https://erickun0125.github.io/constraint-decomposed-impedance/">Project page</a>
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <section id="projects">
+      <h2>Projects</h2>
+
+      <article class="item no-figure">
+        <div>
+          <h3>Recovering from compounding error in visuomotor imitation</h3>
+          <p class="venue"><em>Ongoing since 2026</em> · Robotics Laboratory, SNU</p>
+          <p class="desc">
+            Diffusion-based visuomotor policies drift when small errors push them away from their
+            demonstrations. I am working on helping such policies recover, in simulation so far.
+          </p>
+        </div>
+      </article>
+
+      <article class="item">
+        <figure>
+          <img src="assets/img/thesis-routing.png" width="1100" height="647" loading="lazy"
+               alt="Routing trace of a successful rollout: the selected action hypothesis changes as the robot moves through approach, pre-grasp, grasp, transport and place.">
+        </figure>
+        <div>
+          <h3>Failure Detection for Vision-Language-Action Policies via Expert Routing</h3>
+          <p class="venue"><em>Bachelor's thesis, 2026</em> · Machine Perception and Reasoning Lab, SNU</p>
+          <p class="desc">
+            I add a jointly trained router to SmolVLA that picks one of several latent action hypotheses at
+            each replanning step. The routing trace follows the phases of a task, and how long the policy
+            stays with one hypothesis and how uncertain the routing is give a run-time failure signal,
+            calibrated on successful rollouts only. Evaluated in simulation on LIBERO-10 and LIBERO-PRO.
+          </p>
+          <p class="item-links"><span class="soon">Project page in preparation</span></p>
+        </div>
+      </article>
+
+      <ul class="compact">
+        <li><span>Stewart platform kinematics and torque control</span><span class="where">Rosota student robotics team · 2025–26</span></li>
+        <li><span>Trajectory optimization for collision-free approach and grasping</span><span class="where">INRoL, SNU · 2025</span></li>
+        <li><span>Friction compensation for contact detection on a Franka Panda</span><span class="where">DYROS, SNU · 2023</span></li>
+      </ul>
+      <p class="note">Short write-ups of the last three are in preparation.</p>
+    </section>
+  </main>
+
+  <footer>
+    <span>© 2026 Minseok Choi</span> · <span>Last updated November 2026</span>
+  </footer>
+
+</div>
+</body>
+</html>

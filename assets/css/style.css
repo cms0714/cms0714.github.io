@@ -1,0 +1,119 @@
+/* Minseok Choi — personal site
+   Plain CSS, no build step. Colours follow the CV (navy accent). */
+
+:root {
+  --bg: #ffffff;
+  --surface: #f5f7fa;
+  --text: #1c2430;
+  --muted: #5d6877;
+  --rule: #dfe4ea;
+  --accent: #1f4e79;
+  --accent-soft: #e8eff6;
+  --max: 46rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12161c;
+    --surface: #1a2029;
+    --text: #e4e8ee;
+    --muted: #9aa5b3;
+    --rule: #2b3340;
+    --accent: #8db9e6;
+    --accent-soft: #1d2a3a;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial,
+    "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.25rem; }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover, a:focus-visible { text-decoration: underline; text-underline-offset: 0.15em; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+/* ---------- top navigation ---------- */
+.nav {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+  padding: 1.1rem 0; border-bottom: 1px solid var(--rule);
+}
+.nav .brand { font-weight: 650; color: var(--text); letter-spacing: 0.01em; }
+.nav ul { display: flex; gap: 1.2rem; list-style: none; margin: 0; padding: 0; font-size: 0.95rem; }
+.nav ul a { color: var(--muted); }
+.nav ul a:hover { color: var(--accent); text-decoration: none; }
+
+/* ---------- intro ---------- */
+.intro { display: grid; grid-template-columns: 9.5rem 1fr; gap: 1.75rem; align-items: center; padding: 2.5rem 0 0.5rem; }
+.intro img { width: 9.5rem; height: 9.5rem; object-fit: cover; border-radius: 50%; border: 1px solid var(--rule); background: var(--surface); }
+.intro h1 { font-size: 2rem; line-height: 1.15; margin: 0 0 0.35rem; letter-spacing: -0.01em; }
+.intro .role { color: var(--muted); margin: 0 0 0.9rem; }
+.links { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 0; }
+.links a {
+  display: inline-block; padding: 0.28rem 0.8rem; border: 1px solid var(--rule); border-radius: 999px;
+  font-size: 0.92rem; color: var(--text); background: var(--bg);
+}
+.links a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+
+/* ---------- sections ---------- */
+section { padding-top: 2.4rem; }
+h2 {
+  font-size: 0.82rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 0.9rem; padding-bottom: 0.45rem; border-bottom: 1px solid var(--rule);
+}
+p { margin: 0 0 0.9rem; }
+
+/* ---------- news ---------- */
+.news { list-style: none; margin: 0; padding: 0; }
+.news li { display: grid; grid-template-columns: 6.2rem 1fr; gap: 0.75rem; padding: 0.28rem 0; }
+.news time { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 0.95rem; padding-top: 0.05rem; }
+
+/* ---------- research items ---------- */
+.item { display: grid; grid-template-columns: 13rem 1fr; gap: 1.4rem; padding: 1.1rem 0; border-bottom: 1px solid var(--rule); }
+.item:last-child { border-bottom: 0; }
+.item.no-figure { grid-template-columns: 1fr; }
+.item figure { margin: 0; }
+.item figure img { width: 100%; height: auto; display: block; border-radius: 6px; border: 1px solid var(--rule); background: #fff; }
+.item h3 { font-size: 1.06rem; line-height: 1.35; margin: 0 0 0.25rem; }
+.item .authors, .item .venue { font-size: 0.95rem; margin: 0 0 0.15rem; color: var(--muted); }
+.item .authors strong { color: var(--text); font-weight: 650; }
+.item .venue em { font-style: normal; color: var(--text); }
+.badge { display: inline-block; margin-left: 0.35rem; padding: 0.05rem 0.5rem; border-radius: 999px; font-size: 0.78rem; font-weight: 650; background: var(--accent-soft); color: var(--accent); }
+.item .desc { font-size: 0.97rem; margin: 0.5rem 0 0.5rem; }
+.item .item-links { font-size: 0.93rem; margin: 0; }
+.item .item-links a + a::before, .item .item-links span + a::before { content: "·"; color: var(--muted); margin: 0 0.5rem; display: inline-block; }
+.soon { color: var(--muted); }
+
+/* ---------- compact list ---------- */
+.compact { list-style: none; margin: 0; padding: 0; }
+.compact li { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: 0.4rem 0; border-bottom: 1px dashed var(--rule); }
+.compact li:last-child { border-bottom: 0; }
+.compact .where { color: var(--muted); font-size: 0.95rem; white-space: nowrap; }
+.note { color: var(--muted); font-size: 0.93rem; margin-top: 0.7rem; }
+
+/* ---------- footer ---------- */
+footer { margin-top: 3rem; padding: 1.2rem 0 2.5rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.88rem; }
+
+/* ---------- small screens ---------- */
+@media (max-width: 40rem) {
+  body { font-size: 1rem; }
+  .nav ul { gap: 0.9rem; }
+  .intro { grid-template-columns: 1fr; gap: 1rem; padding-top: 1.8rem; }
+  .intro img { width: 7.5rem; height: 7.5rem; }
+  .item { grid-template-columns: 1fr; gap: 0.8rem; }
+  .item figure { max-width: 24rem; }
+  .news li { grid-template-columns: 5.4rem 1fr; }
+  .compact li { grid-template-columns: 1fr; gap: 0; }
+  .compact .where { white-space: normal; }
+}
