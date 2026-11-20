@@ -1,0 +1,79 @@
+/* Project pages — additions on top of style.css (same fonts, colours and width as the homepage). */
+
+.p-head { padding: 2.4rem 0 0; }
+.p-head .kicker { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); margin: 0 0 0.7rem; }
+.p-head h1 { font-size: clamp(1.6rem, 4.2vw, 2.05rem); line-height: 1.2; letter-spacing: -0.012em; margin: 0 0 0.6rem; text-wrap: balance; }
+.p-head .byline { color: var(--muted); margin: 0; }
+
+/* TL;DR callout */
+.tldr { margin: 1.6rem 0 0; padding: 1.1rem 1.25rem 1.05rem; background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; }
+.tldr .label { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin: 0 0 0.35rem; }
+.tldr .text { font-size: 1.16rem; line-height: 1.45; font-weight: 600; margin: 0 0 0.7rem; }
+.checks { display: flex; flex-wrap: wrap; gap: 0.3rem 1.3rem; list-style: none; margin: 0; padding: 0; font-size: 0.97rem; }
+.checks li::before { content: "✓"; color: var(--accent); font-weight: 700; margin-right: 0.4rem; }
+
+/* figures: plots keep a white background in both themes */
+figure { margin: 1.4rem 0 0; }
+figure .frame { background: #fff; border: 1px solid var(--rule); border-radius: 8px; padding: 0.55rem; }
+figure img { width: 100%; height: auto; display: block; }
+figcaption { color: var(--muted); font-size: 0.9rem; line-height: 1.5; margin-top: 0.5rem; }
+figcaption b { color: var(--text); }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+.pair figure { margin-top: 1.1rem; }
+
+/* compact lists */
+.points { margin: 0; padding-left: 1.15rem; }
+.points li { margin-bottom: 0.5rem; }
+.points li::marker { color: var(--accent); }
+ol.points { padding-left: 1.3rem; }
+.setup { color: var(--muted); font-size: 0.95rem; }
+.signals { margin: 0.9rem 0 0; padding: 0.7rem 1rem; border: 1px solid var(--rule); border-radius: 8px; font-size: 0.97rem; display: grid; grid-template-columns: auto 1fr; gap: 0.25rem 1rem; }
+.signals dt { font-weight: 650; }
+.signals dd { margin: 0; color: var(--muted); }
+
+/* tables */
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.94rem; font-variant-numeric: tabular-nums; margin-top: 0.9rem; }
+.tbl th, .tbl td { padding: 0.36rem 0.5rem; text-align: right; }
+.tbl th:first-child, .tbl td:first-child { text-align: left; }
+.tbl thead th { font-size: 0.84rem; font-weight: 650; border-bottom: 1px solid var(--rule); }
+.tbl tbody tr + tr td { border-top: 1px solid var(--rule); }
+.tbl tr.ours td { background: var(--accent-soft); font-weight: 600; }
+.tbl td b { font-weight: 700; }
+.tbl td u { text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+.tbl .pm { color: var(--muted); font-size: 0.82em; font-weight: 400; }
+.tbl.compare td, .tbl.compare th { text-align: left; }
+.tbl.compare .no::before { content: "✗ "; color: #b3261e; font-weight: 700; }
+.tbl.compare .yes::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+.tbl-wrap { overflow-x: auto; }
+.tbl caption { caption-side: top; text-align: left; font-weight: 650; padding-bottom: 0.3rem; }
+.tbl caption span { font-weight: 400; color: var(--muted); font-size: 0.88rem; }
+
+details { margin-top: 1.2rem; border: 1px solid var(--rule); border-radius: 8px; padding: 0.6rem 0.95rem; }
+details summary { cursor: pointer; font-weight: 650; color: var(--accent); }
+details[open] summary { margin-bottom: 0.4rem; }
+details .tbl { margin-bottom: 0.9rem; }
+
+blockquote { margin: 1.4rem 0 0; padding: 0.2rem 0 0.2rem 1rem; border-left: 3px solid var(--accent); font-size: 1.05rem; font-weight: 600; line-height: 1.5; }
+
+/* rollout player */
+.player .tabs { display: flex; gap: 0.4rem; margin-bottom: 0.6rem; }
+.player .tabs button {
+  font: inherit; font-size: 0.92rem; font-weight: 600; padding: 0.3rem 0.9rem; border-radius: 999px;
+  border: 1px solid var(--rule); background: var(--bg); color: var(--muted); cursor: pointer;
+}
+.player .tabs button:hover { border-color: var(--accent); color: var(--accent); }
+.player .tabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.player .tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.player video { width: 100%; height: auto; display: block; border-radius: 4px; background: #fff; }
+.clip-note { color: var(--muted); font-size: 0.86rem; margin: 0.3rem 0 0; }
+h3.sub { font-size: 1rem; margin: 1.6rem 0 0; }
+
+@media (prefers-color-scheme: dark) {
+  .tbl.compare .no::before { color: #f2a19b; }
+}
+@media (max-width: 40rem) {
+  .pair { grid-template-columns: 1fr; }
+  .tldr .text { font-size: 1.08rem; }
+  .tbl { font-size: 0.86rem; }
+  .tbl th, .tbl td { padding: 0.34rem 0.3rem; }
+}
