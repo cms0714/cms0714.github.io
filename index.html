@@ -11,8 +11,8 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cms0714.github.io/">
   <link rel="canonical" href="https://cms0714.github.io/">
-  <script src="assets/js/theme.js?v=20261120c"></script>
-  <link rel="stylesheet" href="assets/css/style.css?v=20261120c">
+  <script src="assets/js/theme.js?v=20261120e"></script>
+  <link rel="stylesheet" href="assets/css/style.css?v=20261120e">
 </head>
 <body>
 <div class="wrap">
@@ -49,9 +49,9 @@
     <section id="about">
       <h2>About</h2>
       <p>
-        I am an undergraduate at Seoul National University, studying Mechanical Engineering with a double
-        major in Electrical and Computer Engineering. I am a research intern in the Robotics Laboratory,
-        advised by Prof. Frank C. Park.
+        I am an undergraduate at Seoul National University (B.S. expected February 2028), studying
+        Mechanical Engineering with a double major in Electrical and Computer Engineering. I am a research
+        intern in the Robotics Laboratory, advised by Prof. Frank C. Park.
       </p>
       <p>
         From January to June 2027 I will be an exchange student at the University of Washington.
@@ -67,10 +67,10 @@
       <p>
         Imitation learning has become a practical way to obtain manipulation policies. But a learned
         policy degrades once small errors carry it away from its data, and it is limited by the quality
-        of its demonstrations. I work on two ways past this:
+        of its demonstrations. I am interested in two ways past this:
       </p>
       <ul class="goals">
-        <li><b>Robust imitation learning.</b> Policies that can tell when they are failing, and recover.</li>
+        <li><b>Robust imitation learning.</b> Policies that can tell when they are failing (my bachelor's thesis) and recover (ongoing work).</li>
         <li><b>Imitation learning with reinforcement learning.</b> Starting from demonstrations, then improving the policy through its own experience.</li>
       </ul>
     </section>
@@ -92,7 +92,7 @@
           <p class="desc">
             The motions a generative policy samples from one observation lie mostly along the directions an
             articulated object can move. The paper extracts those directions and makes the robot stiff
-            along them and compliant across them, which lowers the contact forces that fight the object's
+            along them and compliant in the remaining directions, which lowers the contact forces that fight the object's
             constraints. I built the controller code and setup for the real-robot experiments.
           </p>
           <p class="item-links">
@@ -129,9 +129,10 @@
           <p class="venue"><em>Bachelor's thesis, 2026</em> · Machine Perception and Reasoning Lab, SNU</p>
           <p class="desc">
             I add a jointly trained router to SmolVLA that picks one of several latent action hypotheses at
-            each replanning step. The routing trace follows the phases of a task, and how long the policy
-            stays with one hypothesis and how uncertain the routing is give a run-time failure signal,
-            calibrated on successful rollouts only. Evaluated in simulation on LIBERO-10 and LIBERO-PRO.
+            each replanning step. Two quantities read from the routing trace, how long the policy stays
+            with one hypothesis and the entropy of the routing weights, give a run-time failure signal
+            calibrated on successful rollouts only. On LIBERO-10 and LIBERO-PRO (simulation) it had the
+            highest balanced accuracy of six detectors on seen, unseen and perturbed tasks.
           </p>
           <p class="item-links"><a href="projects/vla-failure-detection/">Project page</a></p>
         </div>
@@ -146,10 +147,11 @@
         </figure>
         <div>
           <h3>Stewart platform: kinematics and torque control</h3>
-          <p class="venue"><em>2025 – 2026</em> · Rosota, student robotics team</p>
+          <p class="venue"><em>Nov 2025 – Jan 2026</em> · Rosota, student robotics team</p>
           <p class="desc">
             A product-of-exponentials forward-kinematics solver and a 500 Hz operational-space torque
-            controller in ROS 2, tested in Isaac Sim and run on hardware.
+            controller in ROS 2 (controller co-developed with a teammate), tested in Isaac Sim and run on
+            hardware.
           </p>
           <p class="item-links"><a href="projects/control-and-planning/#stewart">Write-up and videos</a></p>
         </div>
@@ -158,17 +160,17 @@
       <article class="item">
         <figure>
           <a href="projects/control-and-planning/#trajopt">
-            <img src="assets/img/earlier-trajopt.jpg" width="720" height="500" loading="lazy"
+            <img src="assets/img/earlier-trajopt.jpg" width="520" height="350" loading="lazy"
                  alt="A Franka Panda arm with a three-finger gripper, drawn as smooth collision shapes, reaching toward an object.">
           </a>
         </figure>
         <div>
           <h3>Trajectory optimization for approach and grasping</h3>
-          <p class="venue"><em>2025</em> · Interactive &amp; Networked Robotics Laboratory, SNU</p>
+          <p class="venue"><em>Jul – Dec 2025</em> · Interactive &amp; Networked Robotics Laboratory, SNU</p>
           <p class="desc">
             Hermite–Simpson direct collocation that takes a simulated Franka Panda with a three-finger
             gripper to a force-closure grasp without collisions, using the lab's differentiable contact
-            code.
+            and grasp-cost code.
           </p>
           <p class="item-links"><a href="projects/control-and-planning/#trajopt">Write-up and videos</a></p>
         </div>
@@ -183,10 +185,10 @@
         </figure>
         <div>
           <h3>Friction compensation for contact detection</h3>
-          <p class="venue"><em>2023</em> · Dynamic Robotic Systems Laboratory, SNU</p>
+          <p class="venue"><em>Jul – Aug 2023</em> · Dynamic Robotic Systems Laboratory, SNU</p>
           <p class="desc">
             A friction model fitted to each joint of a real Franka Panda, which reduces the
-            pose-dependent bias in the end-effector force estimate used to detect contact.
+            configuration-dependent bias in the end-effector force estimate used to detect contact.
           </p>
           <p class="item-links"><a href="projects/control-and-planning/#friction">Write-up and figures</a></p>
         </div>

@@ -18,6 +18,10 @@ figure .frame { background: #fff; border: 1px solid var(--rule); border-radius: 
 figure img { width: 100%; height: auto; display: block; }
 figcaption { color: var(--muted); font-size: 0.9rem; line-height: 1.5; margin-top: 0.5rem; }
 figcaption b { color: var(--text); }
+figure a { display: block; }
+/* photos and video of real scenes: no white mat */
+figure .frame.media { padding: 0; overflow: hidden; background: var(--surface); }
+figure .frame.media video, figure .frame.media img { border-radius: 0; }
 .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
 .pair figure { margin-top: 1.1rem; }
 
@@ -66,28 +70,46 @@ blockquote { margin: 1.4rem 0 0; padding: 0.2rem 0 0.2rem 1rem; border-left: 3px
 .player .tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .player video { width: 100%; height: auto; display: block; border-radius: 4px; background: #fff; }
 .clip-note { color: var(--muted); font-size: 0.86rem; margin: 0.3rem 0 0; }
-h3.sub { font-size: 1rem; margin: 1.6rem 0 0; }
+h3.sub { font-size: 1rem; margin: 1.6rem 0 0.35rem; }
 
 /* pages that collect several projects */
-.proj .meta { color: var(--muted); font-size: 0.95rem; margin: -0.35rem 0 0.75rem; }
+.proj + .proj { margin-top: 2.8rem; border-top: 1px solid var(--rule); }
+.proj > h2 { font-size: 1.28rem; line-height: 1.3; font-weight: 700; text-transform: none; letter-spacing: -0.01em; color: var(--text); border-bottom: 0; padding-bottom: 0; margin-bottom: 0.3rem; }
+.proj .meta { color: var(--muted); font-size: 0.93rem; margin: 0 0 0.8rem; }
 .proj .lead { font-weight: 600; font-size: 1.05rem; line-height: 1.5; }
 figure video { width: 100%; height: auto; display: block; border-radius: 4px; background: #fff; }
 .duo { display: grid; grid-template-columns: 2.162fr 1fr; gap: 0.9rem; align-items: start; }
 .duo figure { margin-top: 0.4rem; }
 .stack img + img { margin-top: 0.55rem; }
-.eq { margin: 0.7rem 0 0.9rem; overflow-x: auto; overflow-y: hidden; padding: 0.15rem 0; }
+.katex { font-size: 1.08em; }
+/* wide equations scroll sideways; the edge shading shows when there is more */
+.eq {
+  margin: 0.7rem 0 0.9rem; overflow-x: auto; overflow-y: hidden; padding: 0.15rem 0;
+  background:
+    linear-gradient(to right, var(--bg) 65%, transparent) left center / 1.6rem 100% no-repeat local,
+    linear-gradient(to left, var(--bg) 65%, transparent) right center / 1.6rem 100% no-repeat local,
+    linear-gradient(to right, rgba(128, 128, 128, 0.32), transparent) left center / 0.7rem 100% no-repeat scroll,
+    linear-gradient(to left, rgba(128, 128, 128, 0.32), transparent) right center / 0.7rem 100% no-repeat scroll;
+}
 .eq .katex-display { margin: 0; }
-.eq .katex { font-size: 1.02em; }
+.eq .katex { font-size: 1.1em; }
 .points .eq { margin: 0.55rem 0 0.6rem; }
 .toc { list-style: none; margin: 0; padding: 0; font-size: 0.97rem; }
 .toc li { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: 0.16rem 0; }
 .toc .when { color: var(--muted); white-space: nowrap; }
 
 :root[data-theme="dark"] .tbl.compare .no::before { color: #f2a19b; }
+:root[data-theme="dark"] figure .frame:not(.media) img, :root[data-theme="dark"] figure .frame:not(.media) video { filter: brightness(0.9); }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .tbl.compare .no::before { color: #f2a19b; }
+  :root:not([data-theme="light"]) figure .frame:not(.media) img, :root:not([data-theme="light"]) figure .frame:not(.media) video { filter: brightness(0.9); }
 }
+.refs { margin: 0; padding-left: 1.15rem; font-size: 0.9rem; color: var(--muted); }
+.refs li { margin-bottom: 0.3rem; }
+
 @media (max-width: 40rem) {
+  figure .frame.scroll { overflow-x: auto; }
+  figure .frame.scroll img { width: 44rem; max-width: none; }
   .duo { grid-template-columns: 1fr; }
   .duo .narrow { max-width: 62%; }
   .toc li { grid-template-columns: 1fr; gap: 0; padding: 0.25rem 0; }

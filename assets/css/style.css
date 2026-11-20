@@ -141,7 +141,10 @@ footer { margin-top: 3rem; padding: 1.2rem 0 2.5rem; border-top: 1px solid var(-
 /* ---------- small screens ---------- */
 @media (max-width: 40rem) {
   body { font-size: 1rem; }
-  .nav ul { gap: 0.3rem 0.9rem; }
+  .nav ul { gap: 0.1rem 1rem; width: 100%; margin-left: 0; justify-content: flex-start; }
+  .nav ul a { display: inline-block; padding: 0.4rem 0; }
+  .nav ul li:last-child { margin-left: auto; }
+  .theme-toggle { width: 2.3rem; height: 2.3rem; }
   .intro { grid-template-columns: 1fr; gap: 1rem; padding-top: 1.8rem; }
   .intro img { width: 7.5rem; height: 7.5rem; }
   .item { grid-template-columns: 1fr; gap: 0.8rem; }

@@ -12,9 +12,13 @@
   <meta property="og:url" content="https://cms0714.github.io/projects/vla-failure-detection/">
   <meta property="og:image" content="https://cms0714.github.io/assets/img/thesis/trace-success.png">
   <link rel="canonical" href="https://cms0714.github.io/projects/vla-failure-detection/">
-  <script src="../../assets/js/theme.js?v=20261120c"></script>
-  <link rel="stylesheet" href="../../assets/css/style.css?v=20261120c">
-  <link rel="stylesheet" href="../../assets/css/project.css?v=20261120c">
+  <script src="../../assets/js/theme.js?v=20261120e"></script>
+  <link rel="stylesheet" href="../../assets/css/style.css?v=20261120e">
+  <link rel="stylesheet" href="../../assets/css/project.css?v=20261120e">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+          onload="renderMathInElement(document.body, {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}], throwOnError: false});"></script>
 </head>
 <body>
 <div class="wrap">
@@ -43,11 +47,11 @@
 
   <div class="tldr">
     <p class="label">TL;DR</p>
-    <p class="text">A self-monitoring VLA: it reads its own expert-routing decisions to tell when it is failing, and stops itself.</p>
+    <p class="text">A self-monitoring VLA: it reads its own expert-routing decisions to tell when it is failing, so that it can stop itself.</p>
     <ul class="checks">
       <li>No extra detector</li>
       <li>No failure data</li>
-      <li>Robust under distribution shift</li>
+      <li>Best under distribution shift</li>
     </ul>
   </div>
 
@@ -75,29 +79,32 @@
       <h2>Problem</h2>
       <p>
         The goal is real-world deployment, where mid-task failures are safety-critical. A VLA needs a
-        mid-task monitor: act in unseen environments, and stop only when it is failing.
+        run-time monitor that lets it keep acting in unseen environments and stops it only when it is
+        failing.
       </p>
       <div class="tbl-wrap">
         <table class="tbl compare">
           <thead><tr><th scope="col"></th><th scope="col">Prior failure detectors</th><th scope="col">This work</th></tr></thead>
           <tbody>
-            <tr><th scope="row">External detector</th><td class="no">Separate VLM</td><td class="yes">None</td></tr>
-            <tr><th scope="row">Failure data</th><td class="no">Required</td><td class="yes">Success-only</td></tr>
-            <tr><th scope="row">Distribution shift</th><td class="no">Degrades</td><td class="yes">Robust on unseen and perturbed tasks</td></tr>
+            <tr><th scope="row">External detector</th><td class="no">A separate VLM in some (AHA, I-FailSense)</td><td class="yes">None</td></tr>
+            <tr><th scope="row">Failure data</th><td class="no">Needed by some (SAFE)</td><td class="yes">Success-only</td></tr>
+            <tr><th scope="row">Distribution shift</th><td class="no">Accuracy drops</td><td class="yes">Highest accuracy on unseen and perturbed tasks</td></tr>
           </tbody>
         </table>
       </div>
+      <p class="setup" style="margin-top:0.8rem">The target: no failure data, a signal from inside the policy, and many tasks at once.</p>
     </section>
 
     <section id="idea">
       <h2>Idea</h2>
       <p>
-        How does a human detect failure? The basal ganglia evaluate several action candidates in
-        parallel and select one, or none. When that selection is impaired, two kinds of failure appear:
-        <strong>stuck</strong> and <strong>unstable</strong> action selection.
+        How does a human detect failure? In the basal ganglia, several action candidates are evaluated
+        in parallel and one, or none, is selected (Mink, 1996; Redgrave et al., 1999). When that selection
+        is impaired, two kinds of failure appear: <strong>stuck</strong> and <strong>unstable</strong>
+        action selection.
       </p>
       <p>
-        I give a VLA the same kind of selection step, so that routing becomes an observable control
+        I give a VLA an analogous selection step, so that routing becomes an observable control
         signal, and I read those two failure signatures from it.
       </p>
     </section>
@@ -105,20 +112,29 @@
     <section id="method">
       <h2>Method</h2>
       <ol class="points">
-        <li><strong>Route.</strong> SmolVLA plus a routing module that picks 1 of <i>K</i> hypotheses at every replanning step. The winner conditions the flow-matching action expert through AdaLN.</li>
-        <li><strong>Read two signals.</strong> Stuck means one expert dominates; unstable means low-confidence selection.</li>
-        <li><strong>Calibrate on successes.</strong> Both signals are z-normalized on successful episodes and accumulated over time. Conformal prediction sets the threshold, so the true-negative rate is at least 1 − <i>α</i>.</li>
+        <li><strong>Route.</strong> SmolVLA plus a routing module that picks 1 of <i>K</i> hypotheses at every replanning step. The winner conditions SmolVLA's flow-matching action expert through AdaLN. The title's “experts” are these <i>K</i> hypotheses; there is one action expert.</li>
+        <li><strong>Read two signals.</strong> Stuck means one hypothesis dominates; unstable means low-confidence selection.</li>
+        <li><strong>Calibrate on successes.</strong> Both signals are z-normalized on successful episodes and accumulated over time. Conformal prediction sets the threshold, so on successful episodes like the calibration ones the false-alarm rate is at most <i>α</i>.</li>
       </ol>
       <dl class="signals">
-        <dt>dwell<sub><i>t</i></sub></dt><dd>same-expert run length → stuck</dd>
+        <dt>dwell<sub><i>t</i></sub></dt><dd>same-hypothesis run length → stuck</dd>
         <dt><i>H<sub>t</sub></i></dt><dd>entropy of the routing weights → unstable</dd>
         <dt><i>S<sub>t</sub></i></dt><dd>accumulated <i>z</i>(dwell<sub><i>t</i></sub>) + <i>z</i>(<i>H<sub>t</sub></i>); alarm when <i>S<sub>t</sub></i> &gt; <i>τ</i></dd>
       </dl>
 
+      <h3 class="sub">Training the router</h3>
+      <p>
+        The flow-matching loss is applied only through the selected hypothesis (winner-takes-all). To
+        train the router, all <i>K</i> hypotheses are also evaluated on the same denoising problem without
+        gradients. Their errors \(e_k\) give a soft target \(q_k\), and the routing weights \(w_k\)
+        are matched to it:
+      </p>
+      <div class="eq">\[ q_k = \frac{\exp(-e_k/\tau_r)}{\sum_{j=1}^{K} \exp(-e_j/\tau_r)}, \qquad \mathcal{L}_{\text{gate}} = -\sum_{k=1}^{K} q_k \log w_k \]</div>
+
       <figure>
         <div class="frame">
-          <img src="../../assets/img/thesis/architecture.png" width="1800" height="842" loading="lazy"
-               alt="Architecture: SmolVLA's vision-language model feeds a routing module that mean-pools the image embeddings, generates K hypothesis latents, scores them, and passes the best one to the flow-matching action expert through AdaLN conditioning.">
+          <a href="../../assets/img/thesis/architecture.png"><img src="../../assets/img/thesis/architecture.png" width="1800" height="842" loading="lazy"
+               alt="Architecture: SmolVLA's vision-language model feeds a routing module that mean-pools the image embeddings, generates K hypothesis latents, scores them, and passes the best one to the flow-matching action expert through AdaLN conditioning."></a>
         </div>
         <figcaption>SmolVLA + routing: VLM → <i>K</i>-hypothesis routing → AdaLN-conditioned flow-matching action expert.</figcaption>
       </figure>
@@ -126,64 +142,68 @@
       <h3 class="sub">Emergent phase decomposition: a success and the two failure signatures</h3>
       <figure>
         <div class="frame">
-          <img src="../../assets/img/thesis/trace-success.png" width="1800" height="873" loading="lazy"
-               alt="A successful rollout of 'put the black bowl in the bottom drawer of the cabinet'. Five camera frames labelled approach, pre-grasp align, grasp, move bowl and close drawer sit above a timeline coloured by the winning expert and a plot of the eight routing weights. Each phase is held by a different expert.">
+          <a href="../../assets/img/thesis/trace-success.png"><img src="../../assets/img/thesis/trace-success.png" width="1800" height="873" loading="lazy"
+               alt="A successful rollout of 'put the black bowl in the bottom drawer of the cabinet'. Five camera frames labelled approach, pre-grasp align, grasp, move bowl and close drawer sit above a timeline coloured by the winning hypothesis and a plot of the eight routing weights. Each phase is held by a different hypothesis."></a>
         </div>
-        <figcaption><b>Success.</b> The router hands over from one expert to the next as the task moves through approach, pre-grasp, grasp, move and close. No phase labels are used.</figcaption>
+        <figcaption><b>Success.</b> In this rollout the router hands over from one hypothesis to the next as the task moves through approach, pre-grasp, grasp, move and close. No phase labels are used in training.</figcaption>
       </figure>
-      <div class="pair">
-        <figure>
-          <div class="frame">
-            <img src="../../assets/img/thesis/trace-stuck.png" width="1800" height="873" loading="lazy"
-                 alt="A failed rollout of the same task: after the first four phases, one expert wins from about step 165 to the end near step 900.">
-          </div>
-          <figcaption><b>Stuck (dwell).</b> Same task, failed: one expert dominates for hundreds of steps.</figcaption>
-        </figure>
-        <figure>
-          <div class="frame">
-            <img src="../../assets/img/thesis/trace-unstable.png" width="1800" height="736" loading="lazy"
-                 alt="A failed rollout in which the winning expert changes many times and the routing weights stay close together.">
-          </div>
-          <figcaption><b>Unstable (entropy).</b> The winner keeps changing and the weights stay close together.</figcaption>
-        </figure>
-      </div>
+      <figure>
+        <div class="frame">
+          <a href="../../assets/img/thesis/trace-stuck.png"><img src="../../assets/img/thesis/trace-stuck.png" width="1800" height="873" loading="lazy"
+               alt="A failed rollout of the same task: after the first four phases, one hypothesis wins from about step 165 to the end near step 900."></a>
+        </div>
+        <figcaption><b>Stuck (dwell).</b> Same task, failed: one hypothesis dominates for hundreds of steps.</figcaption>
+      </figure>
+      <figure>
+        <div class="frame">
+          <a href="../../assets/img/thesis/trace-unstable.png"><img src="../../assets/img/thesis/trace-unstable.png" width="1800" height="736" loading="lazy"
+               alt="A failed rollout in which the winning hypothesis changes many times and the routing weights stay close together."></a>
+        </div>
+        <figcaption><b>Unstable (entropy).</b> The winner keeps changing and the weights stay close together.</figcaption>
+      </figure>
+      <p class="clip-note">Each figure opens at full size.</p>
     </section>
 
     <section id="results">
       <h2>Results</h2>
       <p class="setup">
-        LIBERO-10 with 7 seen and 3 unseen tasks, plus LIBERO-PRO perturbations. <i>K</i> = 8, three seeds,
-        five baselines (SAFE-MLP, SAFE-LSTM, FailDetect, FIPER, STAC).
+        LIBERO-10 with 7 seen and 3 unseen tasks per seed (50 rollouts per task), plus LIBERO-PRO
+        perturbations (10 rollouts per perturbed task). The detector is calibrated on successful episodes
+        from the seen tasks only. <i>K</i> = 8, three seeds, five baselines (SAFE-MLP, SAFE-LSTM, FailDetect,
+        FIPER, STAC).
       </p>
       <ul class="points">
-        <li><strong>Detects failure early and accurately.</strong> Highest balanced accuracy on all splits: 94.4 / 88.2 / 90.1 on seen / unseen / perturbed, against 87.5 / 83.7 / 80.9 for the best baseline on each.</li>
-        <li><strong>Separates failing from successful episodes.</strong> AUROC leads on unseen (+6) and perturbed (+4), and trails SAFE-MLP only on seen.</li>
+        <li><strong>Detects failure early and accurately.</strong> Highest balanced accuracy on all splits, on full episodes at the calibrated threshold: 94.4 / 88.2 / 90.1 on seen / unseen / perturbed, against 87.5 / 83.7 / 80.9 for the best baseline on each.</li>
+        <li><strong>Separates failing from successful episodes.</strong> With episodes truncated to the shortest success, so that length alone cannot separate them, AUROC is highest on unseen (+6) and perturbed (+4) on average over seeds. On seen it is third, behind SAFE-MLP and FailDetect.</li>
         <li><strong>Does not impair the policy.</strong> Routing attaches without harming success: 93.9 on LIBERO, against 92.8 for SmolVLA + LoRA.</li>
       </ul>
 
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <caption>Mean balanced accuracy at the operating threshold <span>(α ∈ [0.01, 0.10]; bold best, underline second)</span></caption>
+          <thead><tr><th scope="col">Method</th><th scope="col">Seen</th><th scope="col">Unseen</th><th scope="col">PRO</th></tr></thead>
+          <tbody>
+            <tr><td>SAFE-LSTM</td><td>57.4</td><td>55.8</td><td>52.8</td></tr>
+            <tr><td>SAFE-MLP</td><td>86.9</td><td><u>83.7</u></td><td><u>80.9</u></td></tr>
+            <tr><td>FailDetect</td><td>87.4</td><td>52.8</td><td>61.9</td></tr>
+            <tr><td>FIPER</td><td>60.8</td><td>57.7</td><td>55.7</td></tr>
+            <tr><td>STAC</td><td><u>87.5</u></td><td>80.3</td><td>73.1</td></tr>
+            <tr class="ours"><td>Ours</td><td><b>94.4</b></td><td><b>88.2</b></td><td><b>90.1</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+
       <figure>
-        <div class="frame">
-          <img src="../../assets/img/thesis/balacc-vs-time.png" width="1800" height="440" loading="lazy"
-               alt="Balanced accuracy against normalized detection time for six detectors on LIBERO seen, LIBERO unseen and LIBERO-PRO. The routing detector's curve lies highest on all three.">
+        <div class="frame scroll">
+          <a href="../../assets/img/thesis/balacc-vs-time.png"><img src="../../assets/img/thesis/balacc-vs-time.png" width="1800" height="440" loading="lazy"
+               alt="Balanced accuracy against normalized detection time for six detectors on LIBERO seen, LIBERO unseen and LIBERO-PRO. The routing detector's curve lies highest on all three."></a>
         </div>
-        <figcaption>Balanced accuracy against detection time. Top-left is earlier and more accurate.</figcaption>
+        <figcaption>Balanced accuracy against detection time on full episodes. Top-left is earlier and more accurate. Opens at full size.</figcaption>
       </figure>
 
       <details>
-        <summary>Full tables</summary>
+        <summary>More tables: AUROC and task success</summary>
         <div class="tbl-wrap">
-          <table class="tbl">
-            <caption>Mean balanced accuracy at the operating threshold <span>(α ∈ [0.01, 0.10]; bold best, underline second)</span></caption>
-            <thead><tr><th scope="col">Method</th><th scope="col">Seen</th><th scope="col">Unseen</th><th scope="col">PRO</th></tr></thead>
-            <tbody>
-              <tr><td>SAFE-LSTM</td><td>57.4</td><td>55.8</td><td>52.8</td></tr>
-              <tr><td>SAFE-MLP</td><td>86.9</td><td><u>83.7</u></td><td><u>80.9</u></td></tr>
-              <tr><td>FailDetect</td><td>87.4</td><td>52.8</td><td>61.9</td></tr>
-              <tr><td>FIPER</td><td>60.8</td><td>57.7</td><td>55.7</td></tr>
-              <tr><td>STAC</td><td><u>87.5</u></td><td>80.3</td><td>73.1</td></tr>
-              <tr class="ours"><td>Ours</td><td><b>94.4</b></td><td><b>88.2</b></td><td><b>90.1</b></td></tr>
-            </tbody>
-          </table>
           <table class="tbl">
             <caption>AUROC ×100 <span>(3-seed mean ± std; episodes truncated to the per-task minimum success length)</span></caption>
             <thead><tr><th scope="col">Method</th><th scope="col">Seen</th><th scope="col">Unseen</th><th scope="col">PRO</th></tr></thead>
@@ -214,7 +234,7 @@
     <section id="takeaways">
       <h2>Takeaways</h2>
       <ul class="points">
-        <li><strong>Observable control signal.</strong> Routing gives an arbitration trace for free. Dwell and entropy become a built-in failure signal, with no auxiliary detector and no extra forward pass.</li>
+        <li><strong>Observable control signal.</strong> Routing gives an arbitration trace as a by-product of acting. Dwell and entropy become a built-in failure signal, with no auxiliary detector and no extra forward pass.</li>
         <li><strong>Deployment value.</strong> Failure flags enable stop, fallback or human handoff on long-horizon, unseen and perturbed tasks, complementing improvements in success rate.</li>
       </ul>
     </section>
@@ -223,7 +243,7 @@
       <h2>Limitations</h2>
       <ul class="points">
         <li><strong>Not plug-and-play.</strong> Other runtime failure detectors attach to an existing policy. This one changes the VLA architecture itself, adding a router and retraining the policy, only to make failure observable. I could not justify that cost strongly enough.</li>
-        <li><strong>Strongest under shift only.</strong> On seen tasks a supervised probe (SAFE-MLP) separates failures better.</li>
+        <li><strong>Strongest under shift only.</strong> On seen tasks SAFE-MLP and FailDetect separate failures better (AUROC).</li>
         <li><strong>Narrow evaluation.</strong> One routing policy on the LIBERO simulation benchmarks, and task success is non-monotonic in <i>K</i>.</li>
       </ul>
       <p style="margin-top:0.9rem">
@@ -232,10 +252,25 @@
       </p>
     </section>
 
+    <section id="references">
+      <h2>References</h2>
+      <ul class="refs">
+        <li>Gu et al., “SAFE: Multitask Failure Detection for Vision-Language-Action Models,” NeurIPS 2025.</li>
+        <li>Agia et al., “Unpacking Failure Modes of Generative Policies: Runtime Monitoring of Consistency and Progress,” CoRL 2024. (STAC)</li>
+        <li>Xu et al., “Can We Detect Failures Without Failure Data? Uncertainty-Aware Runtime Failure Detection for Imitation Learning Policies,” RSS 2025. (FailDetect)</li>
+        <li>Römer et al., “Failure Prediction at Runtime for Generative Robot Policies,” NeurIPS 2025. (FIPER)</li>
+        <li>Duan et al., “AHA: A Vision-Language-Model for Detecting and Reasoning Over Failures in Robotic Manipulation,” ICLR 2025.</li>
+        <li>Grislain et al., “I-FailSense: Towards General Robotic Failure Detection with Vision-Language Models,” ICRA 2026.</li>
+        <li>Mink, “The basal ganglia: focused selection and inhibition of competing motor programs,” Progress in Neurobiology, 1996.</li>
+        <li>Redgrave et al., “The basal ganglia: a vertebrate solution to the selection problem?,” Neuroscience, 1999.</li>
+        <li>Vovk, Gammerman and Shafer, Algorithmic Learning in a Random World, Springer, 2005.</li>
+      </ul>
+    </section>
+
   </main>
 
   <footer>
-    <span>© 2026 Minseok Choi</span> · <a href="../../">Back to homepage</a>
+    <span>© 2026 Minseok Choi</span> · <a href="../../">Home</a>
   </footer>
 
 </div>

@@ -12,9 +12,9 @@
   <meta property="og:url" content="https://cms0714.github.io/projects/control-and-planning/">
   <meta property="og:image" content="https://cms0714.github.io/assets/img/earlier-stewart.jpg">
   <link rel="canonical" href="https://cms0714.github.io/projects/control-and-planning/">
-  <script src="../../assets/js/theme.js?v=20261120c"></script>
-  <link rel="stylesheet" href="../../assets/css/style.css?v=20261120c">
-  <link rel="stylesheet" href="../../assets/css/project.css?v=20261120c">
+  <script src="../../assets/js/theme.js?v=20261120e"></script>
+  <link rel="stylesheet" href="../../assets/css/style.css?v=20261120e">
+  <link rel="stylesheet" href="../../assets/css/project.css?v=20261120e">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
@@ -62,12 +62,13 @@
       <p class="meta">Rosota, student robotics team · Nov 2025 – Jan 2026</p>
       <p class="lead">
         A forward-kinematics solver and a 500 Hz task-space torque controller for a 6-RSS Stewart platform,
-        tested in Isaac Sim and run on hardware.
+        tested in Isaac Sim and run on hardware. The solver is mine; the controller was co-developed with a
+        teammate.
       </p>
 
       <div class="pair">
         <figure>
-          <div class="frame">
+          <div class="frame media">
             <video autoplay muted loop playsinline controls preload="metadata" width="832" height="506"
                    poster="../../assets/video/earlier/stewart-sim.jpg" src="../../assets/video/earlier/stewart-sim.mp4"
                    aria-label="Simulated Stewart platform moving its top plate along straight lines."></video>
@@ -75,7 +76,7 @@
           <figcaption><b>Isaac Sim.</b> Straight-line motions of the top plate, sent as ROS 2 action goals. Played at 3×.</figcaption>
         </figure>
         <figure>
-          <div class="frame">
+          <div class="frame media">
             <video autoplay muted loop playsinline controls preload="metadata" width="832" height="506"
                    poster="../../assets/video/earlier/stewart-hardware.jpg" src="../../assets/video/earlier/stewart-hardware.mp4"
                    aria-label="The physical Stewart platform, mounted at the end of a robot arm, tilting and moving its top plate."></video>
@@ -86,9 +87,9 @@
 
       <p style="margin-top:1.2rem">
         <b>Why torque control.</b> Driving each motor to a position from inverse kinematics is simpler and
-        faster. It also makes the platform stiff, and six position-controlled legs that close one loop push
-        against each other. We controlled the pose of the top plate with motor torques instead, which needs
-        the plate pose and a Jacobian at every cycle.
+        faster. It also makes the platform stiff against contact, and with stiff position servos any
+        calibration error in one leg loads the others through the plate. We controlled the pose of the top
+        plate with motor torques instead, which needs the plate pose and a Jacobian at every cycle.
       </p>
 
       <h3 class="sub">Kinematic model</h3>
@@ -99,35 +100,44 @@
       </p>
       <div class="eq">\[ g_i(\theta_i) \;=\; T_{s,i}\; e^{[\mathcal{S}_1]\theta_{i1}} \cdots e^{[\mathcal{S}_6]\theta_{i6}}\; M\; T_{p,i}^{-1}, \qquad i = 1,\dots,6, \]</div>
       <p>
-        with \(T_{s,i}\) the motor frame in the base, \(T_{p,i}\) the attachment frame on the plate and
-        \(M\) the home pose. The six legs must agree on the plate pose. With the motor angles measured,
-        that leaves the 30 passive angles \(\theta_p\) and 30 closure equations:
+        with \(\mathcal{S}_j\) the screw axes of the leg joints (the same for every leg), \(T_{s,i}\) the
+        motor frame in the base, \(T_{p,i}\) the attachment frame on the plate and \(M\) the leg's home
+        pose. The six legs must agree on the plate pose. With the motor angles measured, that leaves the
+        30 passive angles \(\theta_p\) and 30 closure equations:
       </p>
       <div class="eq">\[ e(\theta_p) \;=\; \begin{bmatrix} \log\!\big(g_2\, g_1^{-1}\big)^{\vee} \\ \vdots \\ \log\!\big(g_6\, g_5^{-1}\big)^{\vee} \end{bmatrix} \;=\; 0 . \]</div>
       <p>
-        I solve them by damped least squares on the passive-joint Jacobians \(J_{p,i}\) of the legs,
-        starting from the previous cycle's solution:
+        I solve them by damped least squares, \(\theta_p \leftarrow \theta_p + \Delta\theta_p\), starting
+        from the previous cycle's solution:
       </p>
-      <div class="eq">\[ \Delta\theta_p = \big(J_c^{\top} J_c + \lambda^2 I\big)^{-1} J_c^{\top}\, e, \qquad J_c = \begin{bmatrix} J_{p,1} & -J_{p,2} & & \\ & J_{p,2} & -J_{p,3} & \\ & & \ddots & \ddots \end{bmatrix}. \]</div>
+      <div class="eq">\[ \Delta\theta_p = \big(J_c^{\top} J_c + \lambda^2 I\big)^{-1} J_c^{\top}\, e \]</div>
+      <div class="eq">\[ J_c = \begin{bmatrix} J_{p,1} & -J_{p,2} & & & \\ & J_{p,2} & -J_{p,3} & & \\ & & \ddots & \ddots & \\ & & & J_{p,5} & -J_{p,6} \end{bmatrix} \]</div>
       <p>
-        This follows the geometric method of Yang et al.; I wrote it in MATLAB first and then in C++, where
-        one solve takes 1–2 ms.
+        where \(J_{p,i} \in \mathbb{R}^{6 \times 5}\) holds the passive-joint columns of leg \(i\)'s space
+        Jacobian. This follows the geometric method of
+        <a href="https://doi.org/10.3390/s22134829">Yang et al. (2022)</a>; I wrote it in MATLAB first and
+        then in C++, where one solve takes 1–2 ms.
       </p>
 
       <h3 class="sub">Jacobian and control law</h3>
       <p>
         A rod carries force only along its axis \(l_i\). A motor torque \(\tau_i\) therefore puts a force
         \(\tau_i / \rho_i\) on the plate along \(l_i\), where \(\rho_i = x_i \cdot (r_i \times l_i)\) is the
-        rod's moment arm about the motor axis \(x_i\) and \(r_i\) is the crank vector. Summing the six rods
-        at their attachment points \(b_i\) gives the plate wrench, and by duality the Jacobian:
+        rod's moment arm about the motor axis \(x_i\) and \(r_i\) is the crank vector. With \(b_i\) the
+        vector from the plate origin to rod \(i\)'s attachment point, summing the six rods gives the plate
+        wrench \(\mathcal{F}\) (force, then moment about the plate origin) and, by duality, the Jacobian:
       </p>
-      <div class="eq">\[ \mathcal{F} = J^{-\top}\tau, \qquad J^{-\top} = \begin{bmatrix} c_1 & \cdots & c_6 \end{bmatrix}, \qquad c_i = \frac{1}{\rho_i} \begin{bmatrix} l_i \\ b_i \times l_i \end{bmatrix}. \]</div>
+      <div class="eq">\[ \mathcal{F} = J^{-\top}\tau, \qquad J^{-\top} = \begin{bmatrix} c_1 & \cdots & c_6 \end{bmatrix} \]</div>
+      <div class="eq">\[ c_i = \frac{1}{\rho_i} \begin{bmatrix} l_i \\ b_i \times l_i \end{bmatrix} \]</div>
       <p>The controller is operational-space control with gravity compensation:</p>
-      <div class="eq">\[ \tau = J^{\top} \Lambda\, \mathcal{F}^{*} + g(q), \qquad \Lambda = \big(J M^{-1} J^{\top}\big)^{-1}, \qquad \mathcal{F}^{*} = \begin{bmatrix} k_p\, e_p + k_v\, \dot e_p \\ k_r\, e_R + k_\omega\, e_\omega \end{bmatrix}. \]</div>
+      <div class="eq">\[ \tau = J^{\top} \Lambda\, \mathcal{F}^{*} + \tau_g \]</div>
+      <div class="eq">\[ \Lambda = \big(J\, \mathcal{M}^{-1} J^{\top}\big)^{-1}, \qquad \mathcal{F}^{*} = \begin{bmatrix} k_p\, e_p - k_v\, v \\ k_r\, e_R - k_\omega\, \omega \end{bmatrix} \]</div>
       <p>
-        \(M\) is a simplified joint-space inertia (crank inertia, with the rod mass lumped at its ends), and
-        \(\Lambda\) is regularized near singular poses. It runs as a ROS 2 node with actions for task-space
-        and joint-space motion. The controller was co-developed with a teammate.
+        \(\mathcal{F}^{*}\) is a PD law on the plate's position error \(e_p\) and orientation error \(e_R\),
+        damped by its linear and angular velocity \(v, \omega\). \(\tau_g\) is the gravity torque and
+        \(\mathcal{M}\) a simplified joint-space inertia (crank inertia, with the rod mass lumped at its
+        ends); \(\Lambda\) is regularized near singular poses. It runs as a ROS 2 node with actions for
+        task-space and joint-space motion.
       </p>
     </section>
 
@@ -136,8 +146,9 @@
       <h2>Trajectory optimization for approach and grasping</h2>
       <p class="meta">Interactive &amp; Networked Robotics Laboratory, SNU · Undergraduate research (UROP), Jul – Dec 2025 · advised by Prof. Dongjun Lee</p>
       <p class="lead">
-        One optimization that takes a Franka Panda with a three-finger gripper from a start pose to a
-        force-closure grasp without collisions. Simulation only.
+        A single trajectory optimization, solved in two stages, that takes a Franka Panda with a
+        three-finger gripper from a start configuration to a grasp scored by a force-closure cost, without
+        collisions. Simulation only.
       </p>
 
       <div class="pair">
@@ -164,42 +175,46 @@
         torques \(u(t)\) and the final time \(t_F\):
       </p>
       <div class="eq">\[ \min_{q(\cdot),\,u(\cdot),\,t_F}\;\; \int_0^{t_F} \Big[ \sum_{i=1}^{10} \frac{u_i^2}{u_{i,\max}^2} \;+\; w_a \lVert \ddot q \rVert^2 \;+\; w_c\, c(q) \Big]\, dt \;+\; \Phi\big(q(t_F)\big) \]</div>
-      <div class="eq">\[ \begin{aligned} \text{s.t.}\quad & M(q)\,\ddot q + h(q,\dot q) = u, \qquad q(0) = q_0,\;\; \dot q(0) = \dot q(t_F) = 0, \\ & q,\ \dot q,\ u \ \text{within limits}, \qquad d_{ab}\big(q(t)\big) \ge \epsilon . \end{aligned} \]</div>
+      <div class="eq">\[ \begin{aligned} \text{s.t.}\quad & M(q)\,\ddot q + h(q,\dot q) = u, \qquad q(0) = q_0,\;\; \dot q(0) = \dot q(t_F) = 0, \\ & q,\ \dot q,\ u \ \text{within limits}, \qquad t_F \in [2, 10]\ \text{s}, \qquad d_{ab}\big(q(t)\big) \ge \epsilon_{ab} . \end{aligned} \]</div>
       <p>
         The integrand is normalized torque, a smoothness term and a soft collision cost. \(d_{ab}\) is the
-        gap between two bodies, and \(\Phi\) is the terminal cost that makes the final pose a grasp.
+        gap between bodies \(a\) and \(b\), \(\epsilon_{ab}\) its margin, and \(\Phi\) is the terminal cost
+        that makes the final configuration a grasp.
       </p>
 
       <ul class="points">
         <li>
-          <b>Collisions, twice.</b> Every link is a smooth convex shape from the lab's differentiable
-          contact code, so each gap \(d_{ab}(q)\) has a gradient. The hard constraint keeps a margin of a
-          few millimetres for arm–object and self-collision pairs; only the fingers may touch the object,
-          and only at \(t_F\). The same gaps also enter the cost through a softplus, which gives the solver
-          a slope before a constraint becomes active:
-          <div class="eq">\[ c(q) = \sum_{(a,b)} \sigma_\beta\big(\epsilon - d_{ab}(q)\big)^2, \qquad \sigma_\beta(z) = \tfrac{1}{\beta}\log\!\big(1 + e^{\beta z}\big). \]</div>
+          <b>Collisions, as a constraint and as a cost.</b> Every link is a smooth convex shape from the
+          lab's differentiable contact code, so each gap \(d_{ab}(q)\) has a gradient. The hard constraint
+          keeps a margin of 1–3 mm for arm–object and self-collision pairs; only the fingers may touch the
+          object, and only at \(t_F\). The same gaps also enter the cost through a softplus with its own
+          margin \(\epsilon_c\) (2 mm), which gives the solver a slope before a constraint becomes active:
+          <div class="eq">\[ c(q) = \sum_{(a,b)} \sigma_\beta\big(\epsilon_c - d_{ab}(q)\big)^2 \]</div>
+          <div class="eq">\[ \sigma_\beta(z) = \tfrac{1}{\beta}\log\!\big(1 + e^{\beta z}\big) \]</div>
         </li>
         <li>
           <b>Terminal cost, in two stages.</b> Stage 1 only pulls the three fingertips \(p_k\) to within a
-          radius \(R\) of the object at \(p_o\):
-          <div class="eq">\[ \Phi_{\text{pre}} = w \sum_{k=1}^{3} \sigma_\beta\big(\lVert p_k(q_F) - p_o \rVert - R\big)^2 . \]</div>
-          Stage 2 starts from that solution and replaces it with the force-closure measure of the lab's
-          grasp-optimization code. For each test wrench \(w_j\) on the object, it asks how well contact
-          forces \(f_i\) at the finger contacts can cancel it:
-          <div class="eq">\[ \Phi_{\text{grasp}} = \frac{1}{12} \sum_{j=1}^{12}\; \min_{f}\; \tfrac12 \Big\lVert w_j + \sum_i P_i f_i \Big\rVert^2 + \tfrac12 \sum_i \lVert d_i f_i \rVert^2 + \tfrac12 \sum_i \big\lVert f_i - \Pi_{\mathcal{K}_i}(f_i) \big\rVert^2 . \]</div>
-          \(P_i\) maps a contact force to an object wrench, the \(d_i f_i\) term allows force only where
-          the gap is closed, and \(\Pi_{\mathcal{K}_i}\) projects onto the friction cone. The gradient with
-          respect to \(q_F\) is taken through the inner minimum. The lab's code tested six force
-          directions; I added six moments, and used the measure as the terminal cost of the trajectory
-          problem.
+          radius \(R\) of the object at \(p_o\), with \(q_F = q(t_F)\):
+          <div class="eq">\[ \Phi_{\text{pre}} = w_p \sum_{k=1}^{3} \sigma_\beta\big(\lVert p_k(q_F) - p_o \rVert - R\big)^2 . \]</div>
+          Stage 2 is warm-started from that solution, with \(\Phi_{\text{pre}}\) replaced by the
+          force-closure measure from the lab's grasp-optimization code. For each test wrench \(w_j\) on the
+          object, it asks how well contact forces \(f_i\) at the six finger bodies can cancel it:
+          <div class="eq">\[ \Phi_{\text{grasp}} = \frac{1}{12} \sum_{j=1}^{12}\; \min_{f_1,\dots,f_6}\; \Big[\, \tfrac12 \Big\lVert w_j + \sum_i P_i f_i \Big\rVert^2 + \tfrac12 \sum_i d_i^{2} \lVert f_i \rVert^2 + \tfrac12 \sum_i \big\lVert f_i - \Pi_{\mathcal{K}_i}(f_i) \big\rVert^2 \Big] \]</div>
+          \(P_i\) maps a contact force at finger body \(i\) to a wrench about the object's centre.
+          \(d_i\) is that body's gap to the object, so the middle term allows force only where the gap is
+          closed, and \(\Pi_{\mathcal{K}_i}\) projects onto the friction cone. A penalty on penetration is
+          added, and the gradient with respect to \(q_F\) is taken through the inner minimum. The lab's
+          code tested six force directions; I added six moments, and used the measure as the terminal cost
+          of the trajectory problem.
         </li>
         <li>
-          <b>Transcription.</b> Hermite–Simpson direct collocation with \(x = (q, \dot q)\) and
-          \(\dot x = f(x,u)\) from the articulated-body algorithm, on 6 segments in stage 1 and 15 in
-          stage 2:
-          <div class="eq">\[ x_{k+1} - x_k = \tfrac{h_k}{6}\big(f_k + 4 f_{k+\frac12} + f_{k+1}\big), \qquad x_{k+\frac12} = \tfrac12\big(x_k + x_{k+1}\big) + \tfrac{h_k}{8}\big(f_k - f_{k+1}\big). \]</div>
-          Solved in MATLAB with OptimTraj and fmincon, with analytic gradients of the costs and
-          constraints.
+          <b>Transcription.</b> Hermite–Simpson direct collocation with \(x = (q, \dot q)\),
+          \(\dot x = f(x,u)\) from the articulated-body algorithm, \(h_k = t_{k+1} - t_k\) and
+          \(f_k = f(x_k, u_k)\), on 6 segments in stage 1 and 15 in stage 2:
+          <div class="eq">\[ x_{k+1} - x_k = \tfrac{h_k}{6}\big(f_k + 4 f_{k+\frac12} + f_{k+1}\big) \]</div>
+          <div class="eq">\[ x_{k+\frac12} = \tfrac12\big(x_k + x_{k+1}\big) + \tfrac{h_k}{8}\big(f_k - f_{k+1}\big) \]</div>
+          Solved in MATLAB with OptimTraj and fmincon. Gradients are supplied to the solver: analytic for
+          the costs and collision constraints, central differences for the dynamics.
         </li>
         <li>
           <b>Limitation.</b> Putting approach and grasp into one problem makes it slow to solve.
@@ -212,18 +227,20 @@
       <h2>Friction compensation for contact detection</h2>
       <p class="meta">Dynamic Robotic Systems Laboratory, SNU · Summer research intern, Jul – Aug 2023 · advised by Prof. Jaeheung Park</p>
       <p class="lead">
-        A friction model for each joint of a Franka Panda that reduces the pose-dependent bias in its
-        estimated contact force.
+        A friction model for each joint of a Franka Panda that reduces the configuration-dependent bias in
+        its estimated contact force.
       </p>
 
       <p>
         <b>Problem.</b> The arm ends its approach when the end-effector force estimated from the joint
-        torque sensors passes a threshold:
+        torque sensors passes a threshold along the approach axis \(z\):
       </p>
-      <div class="eq">\[ \hat F_{\text{ext}} = \big(J^{\top}\big)^{+} \tau_{\text{ext}}, \qquad \text{contact if } \hat F_{\text{ext},z} \ge F_{\text{th}} . \]</div>
+      <div class="eq">\[ \hat F_{\text{ext}} = \bar J^{\top} \tau_{\text{ext}}, \qquad \bar J = M^{-1} J^{\top} \Lambda \]</div>
+      <div class="eq">\[ \text{contact if } \hat F_{\text{ext},z} \ge F_{\text{th}} \]</div>
       <p>
-        Joint friction leaks into \(\tau_{\text{ext}}\), by an amount that depends on the arm's
-        configuration, so \(F_{\text{th}}\) had to be as high as 12 N.
+        Here \(\bar J\) is the dynamically consistent inverse of the Jacobian, with
+        \(\Lambda = (J M^{-1} J^{\top})^{-1}\). Joint friction leaks into \(\tau_{\text{ext}}\), by an
+        amount that depends on the arm's configuration, so \(F_{\text{th}}\) had to be as high as 12 N.
       </p>
 
       <h3 class="sub">Friction model</h3>
@@ -232,34 +249,38 @@
       <ul class="points">
         <li>\(\tau_{c1}\) is Coulomb friction, and \(\tau_{c2}\) lets it differ between the two directions.</li>
         <li>\(\beta_1, \beta_2\) are viscous friction, linear and quadratic in speed.</li>
-        <li>\(\alpha\,\tau_g\) makes friction depend on the load the joint carries. Gravity torque stands in for the configuration, which is what the bias varied with.</li>
+        <li>\(\alpha\,\tau_g\) makes friction depend on the load the joint carries. Gravity torque serves as a proxy for the configuration, on which the bias depended.</li>
         <li>\(\tau_1, \tau_2\) cover the stuck region near zero velocity, where the first line jumps with the sign of a noisy \(\dot q\).</li>
       </ul>
       <p style="margin-top:0.9rem">
-        In motion without contact the true external torque is zero, so the measured \(\tau_{\text{ext}}\)
-        is what the model has to explain. The parameters \(\theta\) are fitted by least squares, and the
-        force is then estimated from the compensated torque:
+        The model combines two earlier ones, the stick and slip regions of Lee et al. (IROS 2015) and the
+        gravity-torque term of Kim et al. (UR 2019), and is fitted on varied motions rather than a single
+        one. In motion without contact the true external torque is zero, so the measured
+        \(\tau_{\text{ext}}\) is what the model has to explain. The parameters \(\theta\) are fitted by
+        least squares, and the force is then estimated from the compensated torque:
       </p>
-      <div class="eq">\[ \theta^{\star} = \arg\min_{\theta} \sum_{t} \Big( \tau_{\text{ext}}(t) - \tau_f\big(\dot q(t), \tau_g(t);\, \theta\big) \Big)^{2}, \qquad \tau_{\text{comp}} = \tau_{\text{ext}} - \tau_f . \]</div>
+      <div class="eq">\[ \theta^{\star} = \arg\min_{\theta} \sum_{t} \Big( \tau_{\text{ext}}(t) - \tau_f\big(\dot q(t), \tau_g(t);\, \theta\big) \Big)^{2} \]</div>
+      <div class="eq">\[ \tau_{\text{comp}} = \tau_{\text{ext}} - \tau_f \]</div>
       <p>
         <b>Data and model choice.</b> Random start-to-goal motions on three arms, logged at 1 kHz; 10
         motions for fitting and 3 held out. I compared six versions of the moving-joint model, from 3 to 10
-        parameters. The 5 above were the smallest that fit well, and 10 fitted the held-out motions worse.
-        With the two static terms that is 7 parameters per joint.
+        parameters, by the residual torque on the held-out motions. The five-parameter version above had
+        the lowest error (0.26 N·m, against 0.60 uncompensated); six and eight did no better, and ten did
+        worse (0.36). With the two static terms that is 7 parameters per joint.
       </p>
 
       <div class="pair">
         <figure>
-          <div class="frame">
-            <img src="../../assets/img/earlier/friction-setup.jpg" width="1000" height="729" loading="lazy"
+          <div class="frame media">
+            <img src="../../assets/img/earlier/friction-setup.jpg" width="1000" height="716" loading="lazy"
                  alt="Planning scene with three Franka Panda arms around a table, each shown at a start pose in green and a goal pose in orange.">
           </div>
           <figcaption><b>Setup.</b> Three arms; start poses in green, goals in orange.</figcaption>
         </figure>
         <figure>
           <div class="frame">
-            <img src="../../assets/img/earlier/friction-rmse.png" width="1100" height="620" loading="lazy"
-                 alt="Bar chart of residual torque RMSE on held-out motions against the number of model parameters: 0.60 newton metres with no model, 0.46 with 3, 0.29 with 4, 0.26 with 5, 6 and 8, and 0.36 with 10.">
+            <a href="../../assets/img/earlier/friction-rmse.png"><img src="../../assets/img/earlier/friction-rmse.png" width="1100" height="620" loading="lazy"
+                 alt="Bar chart of residual torque RMSE on held-out motions against the number of model parameters: 0.60 newton metres with no model, 0.46 with 3, 0.29 with 4, 0.26 with 5, 6 and 8, and 0.36 with 10."></a>
           </div>
           <figcaption><b>Model choice.</b> Residual torque on held-out motions by number of parameters (moving-joint part only; 0 is no compensation).</figcaption>
         </figure>
@@ -268,14 +289,15 @@
       <figure class="stack">
         <div class="frame">
           <img src="../../assets/img/earlier/friction-config-a.jpg" width="1400" height="465" loading="lazy"
-               alt="Estimated end-effector force over time in one approach pose, without and with compensation. Both stay under the 6 newton line until contact at about 5 seconds; the compensated curve sits at zero.">
+               alt="Estimated end-effector force over time in one approach configuration, without and with compensation. Both stay under the 6 newton line until contact at about 5 seconds; the compensated curve sits at zero.">
           <img src="../../assets/img/earlier/friction-config-b.jpg" width="1400" height="513" loading="lazy"
-               alt="The same plot in another approach pose. Without compensation the estimate climbs past the 6 newton line within half a second, before any contact. With compensation it stays below the line until contact at about 2.6 seconds.">
+               alt="The same plot in another approach configuration. Without compensation the estimate climbs past the 6 newton line within about 0.6 seconds, before any contact. With compensation it stays below the line until contact at about 2.6 seconds.">
         </div>
         <figcaption>
-          <b>Result.</b> Estimated force along the approach direction in two approach poses, without (blue)
-          and with (orange) compensation; the red line is 6 N. In the second pose the uncompensated estimate
-          crosses 6 N long before contact. The compensated one stays below it in both until contact.
+          <b>Result.</b> Estimated force along the approach axis in two approach configurations, without
+          (blue) and with (orange) compensation; the red line is 6 N. The uncompensated estimate is zeroed
+          at the start of each approach. In the second configuration it still crosses 6 N long before
+          contact. The compensated one stays below 6 N in both until contact.
         </figcaption>
       </figure>
 
@@ -285,7 +307,10 @@
           a motion is left out of detection. The compensated estimate is noisy where the measured joint
           velocity is noisy.
         </li>
-        <li><b>Use.</b> Added to the lab's 1 kHz C++/ROS controller.</li>
+        <li>
+          <b>Use.</b> Implemented in the lab's 1 kHz C++/ROS controller, where the compensated estimate is
+          computed online next to the existing detector.
+        </li>
       </ul>
     </section>
 
