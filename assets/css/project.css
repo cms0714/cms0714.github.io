@@ -68,10 +68,28 @@ blockquote { margin: 1.4rem 0 0; padding: 0.2rem 0 0.2rem 1rem; border-left: 3px
 .clip-note { color: var(--muted); font-size: 0.86rem; margin: 0.3rem 0 0; }
 h3.sub { font-size: 1rem; margin: 1.6rem 0 0; }
 
+/* pages that collect several projects */
+.proj .meta { color: var(--muted); font-size: 0.95rem; margin: -0.35rem 0 0.75rem; }
+.proj .lead { font-weight: 600; font-size: 1.05rem; line-height: 1.5; }
+figure video { width: 100%; height: auto; display: block; border-radius: 4px; background: #fff; }
+.duo { display: grid; grid-template-columns: 2.162fr 1fr; gap: 0.9rem; align-items: start; }
+.duo figure { margin-top: 0.4rem; }
+.stack img + img { margin-top: 0.55rem; }
+.eq { margin: 0.7rem 0 0.9rem; overflow-x: auto; overflow-y: hidden; padding: 0.15rem 0; }
+.eq .katex-display { margin: 0; }
+.eq .katex { font-size: 1.02em; }
+.points .eq { margin: 0.55rem 0 0.6rem; }
+.toc { list-style: none; margin: 0; padding: 0; font-size: 0.97rem; }
+.toc li { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: 0.16rem 0; }
+.toc .when { color: var(--muted); white-space: nowrap; }
+
 @media (prefers-color-scheme: dark) {
   .tbl.compare .no::before { color: #f2a19b; }
 }
 @media (max-width: 40rem) {
+  .duo { grid-template-columns: 1fr; }
+  .duo .narrow { max-width: 62%; }
+  .toc li { grid-template-columns: 1fr; gap: 0; padding: 0.25rem 0; }
   .pair { grid-template-columns: 1fr; }
   .tldr .text { font-size: 1.08rem; }
   .tbl { font-size: 0.86rem; }

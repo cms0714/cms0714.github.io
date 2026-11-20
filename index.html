@@ -20,6 +20,7 @@
     <a class="brand" href="#top">Minseok Choi</a>
     <ul>
       <li><a href="#about">About</a></li>
+      <li><a href="#research">Research</a></li>
       <li><a href="#publications">Publications</a></li>
       <li><a href="#projects">Projects</a></li>
     </ul>
@@ -46,13 +47,25 @@
         advised by Prof. Frank C. Park.
       </p>
       <p>
-        I work on robot manipulation. I am interested in making imitation-learned policies robust:
-        detecting when a policy is failing, recovering from the failure, and improving the policy with
-        reinforcement learning.
-      </p>
-      <p>
         From January to June 2027 I will be an exchange student at the University of Washington.
       </p>
+    </section>
+
+    <section id="research">
+      <h2>Research Goal</h2>
+      <p>
+        I want robot manipulation policies that keep working when a task does not go the way the
+        demonstrations did.
+      </p>
+      <p>
+        Imitation learning has become a practical way to obtain manipulation policies. But a learned
+        policy degrades once small errors carry it away from its data, and it is limited by the quality
+        of its demonstrations. I work on two ways past this:
+      </p>
+      <ul class="goals">
+        <li><b>Robust imitation learning.</b> Policies that can tell when they are failing, and recover.</li>
+        <li><b>Imitation learning with reinforcement learning.</b> Starting from demonstrations, then improving the policy through its own experience.</li>
+      </ul>
     </section>
 
     <section id="publications">
@@ -117,12 +130,60 @@
         </div>
       </article>
 
-      <ul class="compact">
-        <li><span>Stewart platform kinematics and torque control</span><span class="where">Rosota student robotics team · 2025–26</span></li>
-        <li><span>Trajectory optimization for collision-free approach and grasping</span><span class="where">INRoL, SNU · 2025</span></li>
-        <li><span>Friction compensation for contact detection on a Franka Panda</span><span class="where">DYROS, SNU · 2023</span></li>
-      </ul>
-      <p class="note">Short write-ups of the last three are in preparation.</p>
+      <article class="item">
+        <figure>
+          <a href="projects/control-and-planning/#stewart">
+            <img src="assets/img/earlier-stewart.jpg" width="752" height="506" loading="lazy"
+                 alt="A six-legged Stewart platform mounted at the end of a white robot arm.">
+          </a>
+        </figure>
+        <div>
+          <h3>Stewart platform: kinematics and torque control</h3>
+          <p class="venue"><em>2025 – 2026</em> · Rosota, student robotics team</p>
+          <p class="desc">
+            A product-of-exponentials forward-kinematics solver and a 500 Hz operational-space torque
+            controller in ROS 2, tested in Isaac Sim and run on hardware.
+          </p>
+          <p class="item-links"><a href="projects/control-and-planning/#stewart">Write-up and videos</a></p>
+        </div>
+      </article>
+
+      <article class="item">
+        <figure>
+          <a href="projects/control-and-planning/#trajopt">
+            <img src="assets/img/earlier-trajopt.jpg" width="720" height="500" loading="lazy"
+                 alt="A Franka Panda arm with a three-finger gripper, drawn as smooth collision shapes, reaching toward an object.">
+          </a>
+        </figure>
+        <div>
+          <h3>Trajectory optimization for approach and grasping</h3>
+          <p class="venue"><em>2025</em> · Interactive &amp; Networked Robotics Laboratory, SNU</p>
+          <p class="desc">
+            Hermite–Simpson direct collocation that takes a simulated Franka Panda with a three-finger
+            gripper to a force-closure grasp without collisions, using the lab's differentiable contact
+            code.
+          </p>
+          <p class="item-links"><a href="projects/control-and-planning/#trajopt">Write-up and videos</a></p>
+        </div>
+      </article>
+
+      <article class="item">
+        <figure>
+          <a href="projects/control-and-planning/#friction">
+            <img src="assets/img/earlier-friction.jpg" width="800" height="512" loading="lazy"
+                 alt="Planning scene with three Franka Panda arms, each shown at a start pose and a goal pose.">
+          </a>
+        </figure>
+        <div>
+          <h3>Friction compensation for contact detection</h3>
+          <p class="venue"><em>2023</em> · Dynamic Robotic Systems Laboratory, SNU</p>
+          <p class="desc">
+            A friction model fitted to each joint of a real Franka Panda, which reduces the
+            pose-dependent bias in the end-effector force estimate used to detect contact.
+          </p>
+          <p class="item-links"><a href="projects/control-and-planning/#friction">Write-up and figures</a></p>
+        </div>
+      </article>
     </section>
   </main>
 
