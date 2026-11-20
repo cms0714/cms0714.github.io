@@ -12,9 +12,9 @@
   <meta property="og:url" content="https://cms0714.github.io/projects/vla-failure-detection/">
   <meta property="og:image" content="https://cms0714.github.io/assets/img/thesis/trace-success.png">
   <link rel="canonical" href="https://cms0714.github.io/projects/vla-failure-detection/">
-  <script src="../../assets/js/theme.js?v=20261120e"></script>
-  <link rel="stylesheet" href="../../assets/css/style.css?v=20261120e">
-  <link rel="stylesheet" href="../../assets/css/project.css?v=20261120e">
+  <script src="../../assets/js/theme.js?v=20261121a"></script>
+  <link rel="stylesheet" href="../../assets/css/style.css?v=20261121a">
+  <link rel="stylesheet" href="../../assets/css/project.css?v=20261121a">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
@@ -131,8 +131,8 @@
       </p>
       <div class="eq">\[ q_k = \frac{\exp(-e_k/\tau_r)}{\sum_{j=1}^{K} \exp(-e_j/\tau_r)}, \qquad \mathcal{L}_{\text{gate}} = -\sum_{k=1}^{K} q_k \log w_k \]</div>
 
-      <figure>
-        <div class="frame">
+      <figure class="wide">
+        <div class="frame scroll">
           <a href="../../assets/img/thesis/architecture.png"><img src="../../assets/img/thesis/architecture.png" width="1800" height="842" loading="lazy"
                alt="Architecture: SmolVLA's vision-language model feeds a routing module that mean-pools the image embeddings, generates K hypothesis latents, scores them, and passes the best one to the flow-matching action expert through AdaLN conditioning."></a>
         </div>
@@ -140,23 +140,23 @@
       </figure>
 
       <h3 class="sub">Emergent phase decomposition: a success and the two failure signatures</h3>
-      <figure>
+      <figure class="wide">
         <div class="frame">
-          <a href="../../assets/img/thesis/trace-success.png"><img src="../../assets/img/thesis/trace-success.png" width="1800" height="873" loading="lazy"
+          <a href="../../assets/img/thesis/trace-success.png"><img src="../../assets/img/thesis/trace-success.png" width="1800" height="825" loading="lazy"
                alt="A successful rollout of 'put the black bowl in the bottom drawer of the cabinet'. Five camera frames labelled approach, pre-grasp align, grasp, move bowl and close drawer sit above a timeline coloured by the winning hypothesis and a plot of the eight routing weights. Each phase is held by a different hypothesis."></a>
         </div>
-        <figcaption><b>Success.</b> In this rollout the router hands over from one hypothesis to the next as the task moves through approach, pre-grasp, grasp, move and close. No phase labels are used in training.</figcaption>
+        <figcaption><b>Success</b> (“put the black bowl in the bottom drawer of the cabinet”). In this rollout the router hands over from one hypothesis to the next as the task moves through approach, pre-grasp, grasp, move and close. No phase labels are used in training.</figcaption>
       </figure>
-      <figure>
+      <figure class="wide">
         <div class="frame">
-          <a href="../../assets/img/thesis/trace-stuck.png"><img src="../../assets/img/thesis/trace-stuck.png" width="1800" height="873" loading="lazy"
+          <a href="../../assets/img/thesis/trace-stuck.png"><img src="../../assets/img/thesis/trace-stuck.png" width="1800" height="825" loading="lazy"
                alt="A failed rollout of the same task: after the first four phases, one hypothesis wins from about step 165 to the end near step 900."></a>
         </div>
         <figcaption><b>Stuck (dwell).</b> Same task, failed: one hypothesis dominates for hundreds of steps.</figcaption>
       </figure>
-      <figure>
+      <figure class="wide">
         <div class="frame">
-          <a href="../../assets/img/thesis/trace-unstable.png"><img src="../../assets/img/thesis/trace-unstable.png" width="1800" height="736" loading="lazy"
+          <a href="../../assets/img/thesis/trace-unstable.png"><img src="../../assets/img/thesis/trace-unstable.png" width="1800" height="694" loading="lazy"
                alt="A failed rollout in which the winning hypothesis changes many times and the routing weights stay close together."></a>
         </div>
         <figcaption><b>Unstable (entropy).</b> The winner keeps changing and the weights stay close together.</figcaption>
@@ -193,10 +193,13 @@
         </table>
       </div>
 
-      <figure>
-        <div class="frame scroll">
-          <a href="../../assets/img/thesis/balacc-vs-time.png"><img src="../../assets/img/thesis/balacc-vs-time.png" width="1800" height="440" loading="lazy"
-               alt="Balanced accuracy against normalized detection time for six detectors on LIBERO seen, LIBERO unseen and LIBERO-PRO. The routing detector's curve lies highest on all three."></a>
+      <figure class="wide">
+        <div class="frame">
+          <a href="../../assets/img/thesis/balacc-vs-time.png"><picture>
+            <source media="(max-width: 40rem)" srcset="../../assets/img/thesis/balacc-vs-time-stacked.png" width="562" height="1585">
+            <img src="../../assets/img/thesis/balacc-vs-time.png" width="1800" height="440" loading="lazy"
+               alt="Balanced accuracy against normalized detection time for six detectors on LIBERO seen, LIBERO unseen and LIBERO-PRO. The routing detector's curve lies highest on all three.">
+          </picture></a>
         </div>
         <figcaption>Balanced accuracy against detection time on full episodes. Top-left is earlier and more accurate. Opens at full size.</figcaption>
       </figure>

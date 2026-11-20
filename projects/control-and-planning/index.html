@@ -12,9 +12,9 @@
   <meta property="og:url" content="https://cms0714.github.io/projects/control-and-planning/">
   <meta property="og:image" content="https://cms0714.github.io/assets/img/earlier-stewart.jpg">
   <link rel="canonical" href="https://cms0714.github.io/projects/control-and-planning/">
-  <script src="../../assets/js/theme.js?v=20261120e"></script>
-  <link rel="stylesheet" href="../../assets/css/style.css?v=20261120e">
-  <link rel="stylesheet" href="../../assets/css/project.css?v=20261120e">
+  <script src="../../assets/js/theme.js?v=20261121a"></script>
+  <link rel="stylesheet" href="../../assets/css/style.css?v=20261121a">
+  <link rel="stylesheet" href="../../assets/css/project.css?v=20261121a">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
@@ -62,8 +62,8 @@
       <p class="meta">Rosota, student robotics team · Nov 2025 – Jan 2026</p>
       <p class="lead">
         A forward-kinematics solver and a 500 Hz task-space torque controller for a 6-RSS Stewart platform,
-        tested in Isaac Sim and run on hardware. The solver is mine; the controller was co-developed with a
-        teammate.
+        tested in Isaac Sim and run under torque control on hardware. The solver is mine; the controller
+        was co-developed with a teammate.
       </p>
 
       <div class="pair">
@@ -79,9 +79,9 @@
           <div class="frame media">
             <video autoplay muted loop playsinline controls preload="metadata" width="832" height="506"
                    poster="../../assets/video/earlier/stewart-hardware.jpg" src="../../assets/video/earlier/stewart-hardware.mp4"
-                   aria-label="The physical Stewart platform, mounted at the end of a robot arm, tilting and moving its top plate."></video>
+                   aria-label="The physical Stewart platform under torque control, mounted at the end of a robot arm, tilting and moving its top plate."></video>
           </div>
-          <figcaption><b>Hardware.</b> The platform, mounted at the end of a robot arm.</figcaption>
+          <figcaption><b>Hardware.</b> The platform under torque control, mounted at the end of a robot arm.</figcaption>
         </figure>
       </div>
 
@@ -115,8 +115,9 @@
       <p>
         where \(J_{p,i} \in \mathbb{R}^{6 \times 5}\) holds the passive-joint columns of leg \(i\)'s space
         Jacobian. This follows the geometric method of
-        <a href="https://doi.org/10.3390/s22134829">Yang et al. (2022)</a>; I wrote it in MATLAB first and
-        then in C++, where one solve takes 1–2 ms.
+        <a href="https://doi.org/10.3390/s22134829">Yang et al. (2022)</a>. I wrote the solver in MATLAB
+        first, on top of existing Lie-group helper routines (exponential, logarithm, hat), and then in C++,
+        where one solve takes 1–2 ms.
       </p>
 
       <h3 class="sub">Jacobian and control law</h3>

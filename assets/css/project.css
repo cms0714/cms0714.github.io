@@ -19,6 +19,12 @@ figure img { width: 100%; height: auto; display: block; }
 figcaption { color: var(--muted); font-size: 0.9rem; line-height: 1.5; margin-top: 0.5rem; }
 figcaption b { color: var(--text); }
 figure a { display: block; }
+figure picture { display: block; }
+/* figures with small print: wider than the text column on large screens */
+@media (min-width: 66rem) {
+  figure.wide { width: min(60rem, 92vw); margin-left: 50%; transform: translateX(-50%); }
+  figure.wide figcaption, figure.wide + .clip-note { max-width: calc(var(--max) - 2.5rem); margin-left: auto; margin-right: auto; }
+}
 /* photos and video of real scenes: no white mat */
 figure .frame.media { padding: 0; overflow: hidden; background: var(--surface); }
 figure .frame.media video, figure .frame.media img { border-radius: 0; }
